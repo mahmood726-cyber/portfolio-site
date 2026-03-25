@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meta-Analysis Methods Lab — Open-Access Tools for Evidence Synthesis</title>
+<meta name="description" content="Open-access browser-based tools for meta-analysis, evidence synthesis, and health technology assessment. No installation required.">
+<style>
+:root {
+  --bg: #0f1117;
+  --bg2: #1a1d27;
+  --bg3: #252836;
+  --text: #e4e6eb;
+  --text2: #a0a3b1;
+  --accent: #6c8cff;
+  --accent2: #4ecdc4;
+  --accent3: #ff6b6b;
+  --green: #51cf66;
+  --orange: #ffa94d;
+  --border: #2d3041;
+  --card-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --radius: 12px;
+}
+[data-theme="light"] {
+  --bg: #f8f9fc;
+  --bg2: #ffffff;
+  --bg3: #eef0f5;
+  --text: #1a1d27;
+  --text2: #5a5d6e;
+  --border: #d8dae5;
+  --card-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Theme toggle */
+.theme-toggle {
+  position: fixed; top: 16px; right: 16px; z-index: 100;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; cursor: pointer; color: var(--text); font-size: 14px;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 80px 20px 60px;
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+  border-bottom: 1px solid var(--border);
+}
+.hero h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 12px; }
+.hero h1 span { color: var(--accent); }
+.hero .subtitle { font-size: 1.1rem; color: var(--text2); max-width: 700px; margin: 0 auto 24px; }
+.hero .stats {
+  display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
+  margin-top: 32px;
+}
+.hero .stat { text-align: center; }
+.hero .stat-num { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.hero .stat-label { font-size: 0.85rem; color: var(--text2); }
+
+/* Nav */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
+}
+.nav a {
+  padding: 6px 16px; border-radius: 20px; font-size: 0.85rem;
+  color: var(--text2); background: var(--bg3); border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+.nav a:hover, .nav a.active {
+  color: var(--accent); border-color: var(--accent); text-decoration: none;
+  background: rgba(108,140,255,0.1);
+}
+
+/* Container */
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+/* Section */
+.section { margin-bottom: 60px; }
+.section-title {
+  font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-desc { color: var(--text2); margin-bottom: 24px; font-size: 0.95rem; }
+
+/* Cards grid */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+
+/* Card */
+.card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px; transition: all 0.2s; position: relative;
+  box-shadow: var(--card-shadow);
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.card h3 { font-size: 1.1rem; font-weight: 600; }
+.card .desc { color: var(--text2); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.5; }
+.card .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+  border: 1px solid transparent;
+}
+.badge-lines { background: rgba(108,140,255,0.12); color: var(--accent); border-color: rgba(108,140,255,0.3); }
+.badge-tests { background: rgba(81,207,102,0.12); color: var(--green); border-color: rgba(81,207,102,0.3); }
+.badge-paper { background: rgba(255,169,77,0.12); color: var(--orange); border-color: rgba(255,169,77,0.3); }
+.badge-live { background: rgba(78,205,196,0.12); color: var(--accent2); border-color: rgba(78,205,196,0.3); }
+.badge-r { background: rgba(255,107,107,0.12); color: var(--accent3); border-color: rgba(255,107,107,0.3); }
+
+/* Links row */
+.card-links { display: flex; gap: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.card-links a {
+  font-size: 0.85rem; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.btn-try {
+  background: var(--accent); color: #fff; padding: 5px 14px; border-radius: 8px;
+  font-weight: 600; font-size: 0.85rem;
+}
+.btn-try:hover { opacity: 0.9; text-decoration: none; }
+
+/* Footer */
+.footer {
+  text-align: center; padding: 40px 20px; border-top: 1px solid var(--border);
+  color: var(--text2); font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.6rem; }
+  .hero .stats { gap: 20px; }
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <span id="theme-icon">&#9790;</span>
+</button>
+
+<div class="hero">
+  <h1>Meta-Analysis <span>Methods Lab</span></h1>
+  <p class="subtitle">
+    Open-access, browser-based tools for evidence synthesis, meta-analysis, and health technology assessment.
+    No installation. No paywall. Run entirely in your browser.
+  </p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">35+</div><div class="stat-label">Browser Tools</div></div>
+    <div class="stat"><div class="stat-num">17</div><div class="stat-label">Papers</div></div>
+    <div class="stat"><div class="stat-num">6,000+</div><div class="stat-label">Automated Tests</div></div>
+    <div class="stat"><div class="stat-num">101</div><div class="stat-label">Projects</div></div>
+  </div>
+</div>
+
+<div class="nav" id="nav">
+  <a href="#flagship" class="active">Flagship</a>
+  <a href="#html-apps">HTML Apps</a>
+  <a href="#cutting-edge">Cutting-Edge</a>
+  <a href="#metasprint">MetaSprint</a>
+  <a href="#r-packages">R Packages</a>
+  <a href="#hta">HTA Suite</a>
+  <a href="#pipelines">Pipelines</a>
+  <a href="#datasets">Datasets</a>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════ FLAGSHIP ═══════════════════════════════════ -->
+<div class="section" id="flagship">
+  <h2 class="section-title">Flagship Projects</h2>
+  <p class="section-desc">Large-scale research tools targeting high-impact journals.</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>CardioOracle</h3>
+        <span class="badge badge-live">Live Tool</span>
+      </div>
+      <p class="desc">Predicts whether cardiovascular trials will meet their primary endpoint. Bayesian historical borrowing + conditional power + meta-regression across 902 labeled trials.</p>
+      <div class="meta">
+        <span class="badge badge-lines">4,412 lines</span>
+        <span class="badge badge-tests">60 tests</span>
+        <span class="badge badge-paper">Lancet Digital Health</span>
+      </div>
+      <div class="card-links">
+        <a href="https://github.com/mahmood726-cyber/cardiooracle" class="btn-try">Try Live</a>
+        <a href="https://github.com/mahmood726-cyber/cardiooracle">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Fragility Atlas</h3>
+        <span class="badge badge-paper">BMJ</span>
+      </div>
+      <p class="desc">Multiverse robustness analysis of 407 Cochrane meta-analyses. 56.2% have fragile or unstable conclusions when analyst degrees of freedom are explored (399K specifications).</p>
+      <div class="meta">
+        <span class="badge badge-lines">Pipeline + Dashboard</span>
+        <span class="badge badge-tests">15 tests</span>
+        <span class="badge badge-r">R-validated (metafor)</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]">GitHub</a>
+        <a href="[ZENODO_DOI]">Dataset</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>MetaReproducer</h3>
+        <span class="badge badge-paper">BMJ</span>
+      </div>
+      <p class="desc">Automated reproducibility audit of 501 Cochrane meta-analyses. Only 12.3% of 14,340 constituent studies are openly accessible, making 87.7% computationally unverifiable.</p>
+      <div class="meta">
+        <span class="badge badge-lines">8 modules</span>
+        <span class="badge badge-tests">98 tests</span>
+        <span class="badge badge-r">R-validated</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Al-Mizan</h3>
+        <span class="badge badge-paper">BMJ EBM</span>
+      </div>
+      <p class="desc">Evidence equipoise monitor for living systematic reviews. Tracks when accumulating evidence crosses decision thresholds in real time.</p>
+      <div class="meta">
+        <span class="badge badge-lines">2,534 lines</span>
+        <span class="badge badge-live">Browser-based</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Bias Forensics</h3>
+        <span class="badge badge-paper">RSM</span>
+      </div>
+      <p class="desc">Head-to-head comparison of 8 publication bias methods across 307 Cochrane reviews. Reveals method-specific blind spots and concordance patterns.</p>
+      <div class="meta">
+        <span class="badge badge-lines">R pipeline</span>
+        <span class="badge badge-r">307 reviews</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>AdaptSim</h3>
+        <span class="badge badge-paper">Lancet DH + F1000</span>
+      </div>
+      <p class="desc">Interactive adaptive trial simulator. Group-sequential, sample size re-estimation, and Bayesian adaptive designs with rpact-validated operating characteristics.</p>
+      <div class="meta">
+        <span class="badge badge-lines">2,926 lines</span>
+        <span class="badge badge-live">Browser-based</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ HTML APPS ═══════════════════════════════════ -->
+<div class="section" id="html-apps">
+  <h2 class="section-title">Single-File HTML Apps</h2>
+  <p class="section-desc">Production-grade meta-analysis tools. Each is a single HTML file — download and open in any browser. No server, no dependencies.</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>TruthCert PairwisePro</h3>
+        <span class="badge badge-live">v1.1 Code Freeze</span>
+      </div>
+      <p class="desc">Proof-carrying pairwise meta-analysis with SHA-256 provenance chains. Every number is cryptographically traceable to its source data.</p>
+      <div class="meta">
+        <span class="badge badge-lines">27,901 lines</span>
+        <span class="badge badge-tests">101 Selenium tests</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>IPD-Meta-Pro</h3>
+        <span class="badge badge-live">Shipped</span>
+      </div>
+      <p class="desc">Individual participant data meta-analysis engine. 26 modular components, JSON-patch undo, GOSH sampling, and optional WebR validation.</p>
+      <div class="meta">
+        <span class="badge badge-lines">51,000 lines</span>
+        <span class="badge badge-tests">56 regression tests</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>DTA Pro</h3>
+        <span class="badge badge-live">Shipped</span>
+      </div>
+      <p class="desc">Diagnostic test accuracy meta-analysis. Bivariate GLMM, HSROC, SROC curves, with in-browser WebR + mada package validation.</p>
+      <div class="meta">
+        <span class="badge badge-lines">54,000 lines</span>
+        <span class="badge badge-tests">27 R-parity tests</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>HTA Artifact Standard</h3>
+        <span class="badge badge-live">v1.0.0</span>
+      </div>
+      <p class="desc">Health technology assessment engine with 41 model types, Markov chains, probabilistic sensitivity analysis, and expression parser.</p>
+      <div class="meta">
+        <span class="badge badge-lines">41 engines</span>
+        <span class="badge badge-tests">3,337 tests</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Dose-Response MA</h3>
+        <span class="badge badge-live">Shipped</span>
+      </div>
+      <p class="desc">GLS dose-response meta-analysis engine. Outperforms R dosresmeta in speed while maintaining 120/120 parity with R results.</p>
+      <div class="meta">
+        <span class="badge badge-lines">~40,000 lines</span>
+        <span class="badge badge-tests">120 R-parity</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>NMA Suite</h3>
+        <span class="badge badge-live">Shipped</span>
+      </div>
+      <p class="desc">Network meta-analysis with inconsistency models, SUCRA rankings, league tables, and comparison-adjusted funnel plots. 22 tool variants.</p>
+      <div class="meta">
+        <span class="badge badge-lines">52,000+ lines</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ CUTTING-EDGE ═══════════════════════════════════ -->
+<div class="section" id="cutting-edge">
+  <h2 class="section-title">Cutting-Edge Trio</h2>
+  <p class="section-desc">Three world-first browser-based implementations of advanced meta-analysis methods.</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>MultiverseMA</h3>
+        <span class="badge badge-live">World First</span>
+      </div>
+      <p class="desc">Browser-based multiverse meta-analysis. 7 estimators, 3 CI methods, bias corrections, LOO — up to 36,288 specifications with Janus plots and influence decomposition.</p>
+      <div class="meta">
+        <span class="badge badge-lines">2,354 lines</span>
+        <span class="badge badge-tests">33 Selenium + WebR</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>CausalSynth</h3>
+        <span class="badge badge-live">World First</span>
+      </div>
+      <p class="desc">Causal evidence triangulation engine. Multi-design synthesis (RCT + cohort + MR + ecological), DAG editor, GRADE mapping, CaMeA correction.</p>
+      <div class="meta">
+        <span class="badge badge-lines">1,747 lines</span>
+        <span class="badge badge-tests">59 Selenium</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>MAPriors</h3>
+        <span class="badge badge-live">World First</span>
+      </div>
+      <p class="desc">MAP prior and dynamic borrowing engine. Robust MAP, commensurate prior, power prior, operating characteristic simulation, regulatory-grade reports.</p>
+      <div class="meta">
+        <span class="badge badge-lines">2,537 lines</span>
+        <span class="badge badge-tests">38 Selenium + WebR</span>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ METASPRINT ═══════════════════════════════════ -->
+<div class="section" id="metasprint">
+  <h2 class="section-title">MetaSprint Family</h2>
+  <p class="section-desc">Rapid meta-analysis engines for specific evidence synthesis tasks.</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>MetaSprint Autopilot</h3>
+        <span class="badge badge-paper">PLOS ONE</span>
+      </div>
+      <p class="desc">Automated pairwise meta-analysis from data input to publication-ready output. Forest plots, funnel plots, influence analysis, GRADE assessment.</p>
+      <div class="meta">
+        <span class="badge badge-lines">30,700 lines</span>
+        <span class="badge badge-tests">~1,462 tests</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>MetaSprint DTA</h3>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <p class="desc">Rapid diagnostic test accuracy meta-analysis with bivariate model, SROC, and sensitivity/specificity forest plots.</p>
+      <div class="meta">
+        <span class="badge badge-lines">28,857 lines</span>
+        <span class="badge badge-tests">~857 tests</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>MetaSprint NMA</h3>
+        <span class="badge badge-live">Shipped</span>
+      </div>
+      <p class="desc">Rapid network meta-analysis with automated network geometry, inconsistency testing, and ranking tables.</p>
+      <div class="meta">
+        <span class="badge badge-lines">31,499 lines</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>MetaSprint Dose-Response</h3>
+        <span class="badge badge-live">Shipped</span>
+      </div>
+      <p class="desc">Rapid dose-response meta-analysis with flexible spline models and model comparison.</p>
+      <div class="meta">
+        <span class="badge badge-lines">25,975 lines</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ R PACKAGES ═══════════════════════════════════ -->
+<div class="section" id="r-packages">
+  <h2 class="section-title">R Packages &amp; Methods Papers</h2>
+  <p class="section-desc">Statistical methodology packages and research contributions.</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>HeterogeneityASE</h3>
+        <span class="badge badge-paper">F1000Research</span>
+      </div>
+      <p class="desc">Novel heterogeneity estimator using asymptotic sandwich estimation. R package with 24 unit tests.</p>
+      <div class="meta">
+        <span class="badge badge-tests">24 tests</span>
+        <span class="badge badge-r">R package</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>CRES</h3>
+        <span class="badge badge-paper">PLOS ONE</span>
+      </div>
+      <p class="desc">Cardiorenal evidence synthesis. 227 tests, dual-config (cardiorenal + oncology). v5.0.</p>
+      <div class="meta">
+        <span class="badge badge-tests">227 tests</span>
+        <span class="badge badge-r">R package</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>GWAM</h3>
+        <span class="badge badge-paper">Manuscript Ready</span>
+      </div>
+      <p class="desc">Genome-wide association meta-analysis framework. v1.0.5 with 91 automated tests.</p>
+      <div class="meta">
+        <span class="badge badge-tests">91 tests</span>
+        <span class="badge badge-r">R package</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>IPD-QMA</h3>
+        <span class="badge badge-paper">PLOS ONE ACCEPTED</span>
+      </div>
+      <p class="desc">Individual participant data quantile meta-analysis. First accepted publication from this lab.</p>
+      <div class="meta">
+        <span class="badge badge-tests">12 tests</span>
+        <span class="badge badge-r">R package</span>
+      </div>
+      <div class="card-links">
+        <a href="[DOI_URL]">Paper</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>SYNTHESIS (FATIHA)</h3>
+        <span class="badge badge-live">Shipped</span>
+      </div>
+      <p class="desc">Comprehensive synthesis R package. 82 automated tests covering effect size computation, pooling, and diagnostics.</p>
+      <div class="meta">
+        <span class="badge badge-tests">82 tests</span>
+        <span class="badge badge-r">R package</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>GRMA</h3>
+        <span class="badge badge-paper">PLOS ONE</span>
+      </div>
+      <p class="desc">Generalised random-effects meta-analysis. v10.0, submission-ready manuscript.</p>
+      <div class="meta">
+        <span class="badge badge-r">R package</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ HTA ═══════════════════════════════════ -->
+<div class="section" id="hta">
+  <h2 class="section-title">HTA Suite</h2>
+  <p class="section-desc">Health technology assessment tools for evidence-based decision making.</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>HTA Evidence Integrity</h3>
+        <span class="badge badge-paper">Manuscript Ready</span>
+      </div>
+      <p class="desc">Automated integrity checks for HTA evidence submissions. Detects inconsistencies in survival data, cost inputs, and model structure.</p>
+      <div class="card-links"><a href="[GITHUB_URL]">GitHub</a></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>HTA Transportability</h3>
+        <span class="badge badge-paper">Manuscript Ready</span>
+      </div>
+      <p class="desc">Evidence transportability engine for cross-jurisdiction HTA. Population adjustment methods including MAIC, STC, and ML-NMR.</p>
+      <div class="card-links"><a href="[GITHUB_URL]">GitHub</a></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Value-Based HTA</h3>
+        <span class="badge badge-paper">Manuscript Ready</span>
+      </div>
+      <p class="desc">Multi-criteria value framework for health technology assessment with stakeholder preference elicitation.</p>
+      <div class="card-links"><a href="[GITHUB_URL]">GitHub</a></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ PIPELINES ═══════════════════════════════════ -->
+<div class="section" id="pipelines">
+  <h2 class="section-title">Data Pipelines</h2>
+  <p class="section-desc">Automated extraction, analysis, and validation pipelines.</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>RCT Extractor v10.3</h3>
+        <span class="badge badge-live">v10.3</span>
+      </div>
+      <p class="desc">Deterministic extraction of effect sizes from clinical trial PDFs. Text + table + computation methods. 94.6% accuracy on 863-test validation suite.</p>
+      <div class="meta">
+        <span class="badge badge-tests">863 tests</span>
+      </div>
+      <div class="card-links"><a href="[GITHUB_URL]">GitHub</a></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>PredictionGap</h3>
+        <span class="badge badge-paper">BMJ / AIM</span>
+      </div>
+      <p class="desc">69.8% of "significant" Cochrane meta-analyses have prediction intervals crossing the null. PI/CI ratio mean 3.12x across 403 reviews.</p>
+      <div class="card-links"><a href="[GITHUB_URL]">GitHub</a></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>RMST Meta</h3>
+        <span class="badge badge-live">World First</span>
+      </div>
+      <p class="desc">First browser-based restricted mean survival time meta-analysis tool. For non-proportional hazards settings where HR is inappropriate.</p>
+      <div class="meta">
+        <span class="badge badge-lines">1,224 lines</span>
+      </div>
+      <div class="card-links">
+        <a href="[GITHUB_RAW_URL]" class="btn-try">Try Live</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ DATASETS ═══════════════════════════════════ -->
+<div class="section" id="datasets">
+  <h2 class="section-title">Open Datasets</h2>
+  <p class="section-desc">Curated research datasets for meta-analysis methodology research.</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Pairwise70</h3>
+      </div>
+      <p class="desc">501 Cochrane systematic reviews with per-study data. 14,340 studies across diverse therapeutic areas. Foundation dataset for Fragility Atlas, MetaReproducer, PredictionGap, and Bias Forensics.</p>
+      <div class="card-links">
+        <a href="[ZENODO_DOI]">Zenodo</a>
+        <a href="[GITHUB_URL]">GitHub</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>DTA70</h3>
+      </div>
+      <p class="desc">Diagnostic test accuracy dataset for DTA methodology research and tool validation.</p>
+      <div class="card-links">
+        <a href="[ZENODO_DOI]">Zenodo</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <p>Meta-Analysis Methods Lab &mdash; All tools are open-access and open-source.</p>
+  <p style="margin-top:8px;">
+    <a href="https://github.com/mahmood726-cyber">GitHub</a> &nbsp;|&nbsp;
+    <a href="[ORCID_URL]">ORCID</a> &nbsp;|&nbsp;
+    <a href="mailto:[EMAIL]">Contact</a>
+  </p>
+  <p style="margin-top:12px; font-size:0.8rem; color:var(--text2);">
+    Built with no frameworks, no build steps, no dependencies &mdash; just like the tools themselves.
+  </p>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? '\u263E' : '\u2600';
+  try { localStorage.setItem('portfolio-theme', next); } catch(e) {}
+}
+// Restore theme
+try {
+  const saved = localStorage.getItem('portfolio-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('theme-icon').textContent = saved === 'dark' ? '\u263E' : '\u2600';
+  }
+} catch(e) {}
+
+// Smooth scroll + active nav
+document.querySelectorAll('.nav a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.nav a').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+// Scroll spy
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
