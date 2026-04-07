@@ -48,10 +48,11 @@
     "validation": "DRAFT"
   },
   "affiliation": "Tahir Heart Institute",
-  "email": "author@example.com",
+  "email": "mahmood.ahmad2@nhs.net",
   "references": [
     "Drummond MF, Sculpher MJ, Claxton K, Stoddart GL, Torrance GW. Methods for the Economic Evaluation of Health Care Programmes. 4th ed. Oxford University Press; 2015.",
     "Briggs AH, Weinstein MC, Fenwick EAL, et al. Model parameter estimation and uncertainty analysis. Med Decis Making. 2012;32(5):722-732.",
     "Borenstein M, Hedges LV, Higgins JPT, Rothstein HR. Introduction to Meta-Analysis. 2nd ed. Wiley; 2021."
-  ]
+  ],
+  "submitted": false
 }
