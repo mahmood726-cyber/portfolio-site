@@ -21,3 +21,8 @@ Can a single-page portfolio effectively communicate the scope and validation sta
 1. Expand the background and rationale into a full introduction.
 2. Translate the E156 capsule into detailed methods, results, and discussion sections.
 3. Add figures, tables, and a submission-ready reference narrative around the existing evidence object.
+
+## References
+
+1. Borenstein M, Hedges LV, Higgins JPT, Rothstein HR. Introduction to Meta-Analysis. 2nd ed. Wiley; 2021.
+2. Briggs AH, Weinstein MC, Fenwick EAL, et al. Model parameter estimation and uncertainty analysis. Med Decis Making. 2012;32(5):722-732. doi: 10.1177/0272989X11418241
